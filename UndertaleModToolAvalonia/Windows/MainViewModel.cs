@@ -62,6 +62,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     public partial (uint Major, uint Minor, uint Release, uint Build) DataVersion { get; set; }
 
+    Dictionary<int, UndertaleData> audioGroupDataList = [];
+
     IStorageFolder? lastDataLocation;
 
     // Project
@@ -336,6 +338,68 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    public UndertaleData? GetAudioGroupData(int audioGroupId)
+    {
+        if (audioGroupDataList.TryGetValue(audioGroupId, out UndertaleData? value))
+        {
+            return value;
+        }
+
+        return LoadAudioGroupData(audioGroupId);
+    }
+
+    public UndertaleData? LoadAudioGroupData(int audioGroupId)
+    {
+        if (Data is null)
+            return null;
+
+        if (audioGroupId >= Data.AudioGroups.Count)
+            return null;
+
+        UndertaleAudioGroup audioGroup = Data.AudioGroups[audioGroupId];
+
+        string relativePath = audioGroup.Path?.Content ?? $"audiogroup{audioGroupId}.dat";
+
+        string path = Paths.JoinVerifyWithinDirectory(Path.GetDirectoryName(DataPath), relativePath);
+
+        if (File.Exists(path))
+        {
+            try
+            {
+                using FileStream stream = File.OpenRead(path);
+
+                UndertaleData audioGroupData = UndertaleIO.Read(stream,
+                    (string warning, bool isImportant) =>
+                    {
+                        //warnings.Add(warning);
+                        if (isImportant)
+                        {
+                            //hadImportantWarnings = true;
+                        }
+                    },
+                    (string message) =>
+                    {
+                        //Dispatcher.UIThread.Post(() => w.SetText($"Opening data file... {message}"));
+                    }
+                );
+
+                audioGroupDataList[audioGroupId] = audioGroupData;
+                return audioGroupData;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    public void UnloadAudioGroupData(int audioGroupId)
+    {
+        audioGroupDataList.Remove(audioGroupId);
+    }
+
     public async Task<bool> SaveData(Stream stream)
     {
         IsEnabled = false;
@@ -399,6 +463,8 @@ public partial class MainViewModel : ObservableObject
 
         Data = null;
         DataPath = null;
+
+        audioGroupDataList.Clear();
     }
 
     public void UpdateVersion()
@@ -655,6 +721,12 @@ public partial class MainViewModel : ObservableObject
         dataPath ??= DataPath;
         // "launcher" allows game_change data files to still access files above the data path.
         Process.Start(new ProcessStartInfo(runnerPath, $"-game \"{dataPath}\" launcher") { WorkingDirectory = Path.GetDirectoryName(dataPath) });
+    }
+
+    public void FileClearAudioGroupCache()
+    {
+        audioGroupDataList.Clear();
+        GC.Collect();
     }
 
     public async void FileSettings()

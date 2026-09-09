@@ -23,6 +23,8 @@
                     <NativeMenuItem Header="_Run with data/project runner" Command="{Binding FileRun}" Gesture="F5"/>
                     <NativeMenuItem Header="_Run with other runner" Command="{Binding FileRunWithOther}"/>
                     <NativeMenuItemSeparator Header="-" />
+                    <NativeMenuItem Header="Clear audio group cache" Command="{Binding FileClearAudioGroupCache}"/>
+                    <NativeMenuItemSeparator Header="-" />
                     <NativeMenuItem Header="S_ettings" Command="{Binding FileSettings}"/>
                     <NativeMenuItem Header="_Exit" Command="{Binding FileExit}"/>
                 </NativeMenu>

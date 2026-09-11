@@ -18,7 +18,7 @@
                     <NativeMenuItem Header="_New" Command="{Binding FileNew}" Gesture="{OnPlatform 'Ctrl+N', macOS='Meta+N'}"/>
                     <NativeMenuItem Header="_Open" Command="{Binding FileOpen}" Gesture="{OnPlatform 'Ctrl+O', macOS='Meta+O'}"/>
                     <NativeMenuItem Header="_Save" Command="{Binding FileSave}" Gesture="{OnPlatform 'Ctrl+S', macOS='Meta+S'}"/>
-                    <NativeMenuItem Header="_Close" Command="{Binding FileClose}" Gesture="{OnPlatform 'Ctrl+W', macOS='Meta+W'}"/>
+                    <NativeMenuItem Header="_Close" Command="{Binding FileClose}"/>
                     <NativeMenuItemSeparator Header="-" />
                     <NativeMenuItem Header="_Run with data/project runner" Command="{Binding FileRun}" Gesture="F5"/>
                     <NativeMenuItem Header="_Run with other runner" Command="{Binding FileRunWithOther}" Gesture="Alt+F5"/>

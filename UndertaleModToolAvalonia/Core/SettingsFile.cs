@@ -95,6 +95,30 @@ public partial class SettingsFile
 
     public string Version { get; set; } = App.VersionString;
 
+    public enum IndentStyleValue
+    {
+        FourSpaces = 0,
+        TwoSpaces = 1,
+        Tabs = 2
+    }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IndentStyleValue IndentStyle
+    {
+        get => DecompileSettings.IndentString switch
+        {
+            "\t" => IndentStyleValue.Tabs,
+            "  " => IndentStyleValue.TwoSpaces,
+            _ => IndentStyleValue.FourSpaces,
+        };
+        set => DecompileSettings.IndentString = value switch
+        {
+            IndentStyleValue.TwoSpaces => "  ",
+            IndentStyleValue.Tabs => "\t",
+            _ => "    ",
+        };
+    }
+    
     public enum ThemeValue
     {
         SystemDefault = 0,

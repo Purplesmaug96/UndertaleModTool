@@ -11,37 +11,8 @@
         Height="500"
         Classes="SettingsWindow">
 
-    <Window.Styles>
-        <Style Selector="Expander.tree">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        </Style>
-
-        <Style Selector="Expander.tree /template/ ToggleButton#ExpanderHeader">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="0,2"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        </Style>
-
-        <Style Selector="Expander.tree /template/ Border#ExpanderContent">
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="20,2,0,6"/>
-            <Setter Property="Background" Value="Transparent"/>
-        </Style>
-
-        <Style Selector="Expander.tree /template/ ToggleButton#ExpanderHeader TextBlock">
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-    </Window.Styles>
-
     <ScrollViewer>
         <StackPanel Name="ContentStackPanel" Spacing="4">
-            <TextBlock FontWeight="Bold" FontSize="16" Margin="0,0,0,4">Settings</TextBlock>
-            <Separator/>
-
             <Expander Classes="tree" Header="Interface" IsExpanded="True">
                 <StackPanel Spacing="4">
                     <Grid l:AutoGridBehavior.Enable="True">
@@ -111,7 +82,7 @@
                     </Grid>
 
                     <Grid ColumnDefinitions="Auto,1*">
-                        <Label VerticalAlignment="Center">Indent string:</Label>
+                        <Label VerticalAlignment="Center">Indent style:</Label>
                         <ComboBox Grid.Column="1" SelectedIndex="{Binding MainVM.Settings.IndentStyle}">
                             <ComboBoxItem>4 spaces</ComboBoxItem>
                             <ComboBoxItem>2 spaces</ComboBoxItem>
@@ -173,7 +144,7 @@
                     <CheckBox Content="Around static initialization"
                               ToolTip.Tip="If enabled, adds an empty line before and after static initialization, grouping together consecutive statics if possible."
                               IsChecked="{Binding MainVM.Settings.DecompileSettings.EmptyLineAroundStaticInitialization}"/>
-                    <CheckBox Content="Around static initialization"
+                    <CheckBox Content="Around enums"
                               ToolTip.Tip="If enabled, adds an empty line before and after enums."
                               IsChecked="{Binding MainVM.Settings.DecompileSettings.EmptyLineAroundEnums}"/>
                 </StackPanel>

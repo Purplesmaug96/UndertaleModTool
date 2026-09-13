@@ -81,13 +81,18 @@
                         <TextBox Grid.Column="1" Text="{Binding MainVM.Settings.InstanceIdPrefix}"/>
                     </Grid>
 
-                    <Grid ColumnDefinitions="Auto,1*">
+                    <Grid ColumnDefinitions="Auto,Auto,*">
                         <Label VerticalAlignment="Center">Indent style:</Label>
-                        <ComboBox Grid.Column="1" SelectedIndex="{Binding MainVM.Settings.IndentStyle}">
+                        <ComboBox Grid.Column="1" x:Name="IndentComboBox" SelectedIndex="{Binding MainVM.Settings.IndentStyle}">
                             <ComboBoxItem>4 spaces</ComboBoxItem>
                             <ComboBoxItem>2 spaces</ComboBoxItem>
                             <ComboBoxItem>Tabs</ComboBoxItem>
+                            <ComboBoxItem>Custom</ComboBoxItem>
                         </ComboBox>
+                        <TextBox x:Name="IndentTextBox"
+                                 Grid.Column="2"
+                                 AcceptsTab="True"
+                                 Text="{Binding MainVM.Settings.DecompileSettings.IndentString}"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="Auto,1*">

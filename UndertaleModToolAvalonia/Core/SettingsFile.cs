@@ -99,7 +99,8 @@ public partial class SettingsFile
     {
         FourSpaces = 0,
         TwoSpaces = 1,
-        Tabs = 2
+        Tabs = 2,
+        Custom = 3,
     }
 
     [System.Text.Json.Serialization.JsonIgnore]
@@ -107,15 +108,18 @@ public partial class SettingsFile
     {
         get => DecompileSettings.IndentString switch
         {
+            "    " => IndentStyleValue.FourSpaces,
             "\t" => IndentStyleValue.Tabs,
             "  " => IndentStyleValue.TwoSpaces,
-            _ => IndentStyleValue.FourSpaces,
+            _ => IndentStyleValue.Custom,
         };
         set => DecompileSettings.IndentString = value switch
         {
+            IndentStyleValue.FourSpaces => "    ",
             IndentStyleValue.TwoSpaces => "  ",
             IndentStyleValue.Tabs => "\t",
-            _ => "    ",
+            IndentStyleValue.Custom => DecompileSettings.IndentString,
+            _ => throw new NotImplementedException(),
         };
     }
     

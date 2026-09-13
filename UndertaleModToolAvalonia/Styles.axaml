@@ -89,6 +89,31 @@
         </Style.Resources>
     </Style>
 
+    <!-- Expander for settings window-->
+    <Style Selector="Expander.tree">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style Selector="Expander.tree /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0,2"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style Selector="Expander.tree /template/ Border#ExpanderContent">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="20,2,0,6"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Expander.tree /template/ ToggleButton#ExpanderHeader TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
     <!-- AvaloniaEdit -->
     <Style Selector="AvaloniaEdit|TextEditor">
         <Setter Property="Background" Value="{DynamicResource AvaloniaEditBackground}" />

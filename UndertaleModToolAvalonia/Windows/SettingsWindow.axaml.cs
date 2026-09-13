@@ -9,6 +9,9 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
 
+        Loaded += (_, _) => UpdateIndentTextBoxVisibility();
+        IndentComboBox.SelectionChanged += (_, _) => UpdateIndentTextBoxVisibility();
+
         Closing += async (_, _) =>
         {
             if (DataContext is SettingsViewModel vm)
@@ -19,5 +22,12 @@ public partial class SettingsWindow : Window
                 }
             }
         };
+    }
+    void UpdateIndentTextBoxVisibility()
+    {
+        if (IndentComboBox.SelectedIndex == IndentComboBox.ItemCount - 1)
+            IndentTextBox.IsVisible = true;
+        else
+            IndentTextBox.IsVisible = false;
     }
 }

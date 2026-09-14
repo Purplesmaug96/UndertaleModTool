@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+using Underanalyzer;
 using Underanalyzer.Decompiler;
 
 namespace UndertaleModTool
@@ -56,6 +57,11 @@ namespace UndertaleModTool
         public bool RememberWindowPlacements { get; set; } = false;
 
         public bool RecompileAllCodeSourcesOnProjectSave { get; set; } = false;
+
+        /// <summary>
+        /// Level of code optimization to apply when compiling GML code.
+        /// </summary>
+        public CompilerOptimizationLevel OptimizationLevel { get; set; } = CompilerOptimizationLevel.GameMaker;
 
         public static Settings Instance { get; private set; }
 

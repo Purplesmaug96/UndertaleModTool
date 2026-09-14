@@ -26,6 +26,16 @@ public class GlobalDecompileContext : IGameContext
     public UndertaleData Data { get; }
 
     // Implementation of Underanalyzer properties
+
+    /// <summary>
+    /// Level of code optimization to apply during compilation.
+    /// </summary>
+    /// <remarks>
+    /// Can be set to change the optimization behavior of compilation. Should be set before compilation begins,
+    /// and should not be modified during compilation.
+    /// </remarks>
+    public CompilerOptimizationLevel OptimizationLevel { get; set; } = CompilerOptimizationLevel.GameMaker;
+
     public bool UsingGMLv2 => Data?.IsVersionAtLeast(2, 3) ?? false;
     public bool Bytecode14OrLower => (Data?.GeneralInfo?.BytecodeVersion ?? 15) <= 14;
     public bool UsingGMS2OrLater => Data?.IsVersionAtLeast(2) ?? false;

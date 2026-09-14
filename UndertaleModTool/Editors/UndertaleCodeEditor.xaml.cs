@@ -1010,6 +1010,7 @@ namespace UndertaleModTool
                     {
                         MainThreadAction = (f) => { dispatcher.Invoke(() => f()); }
                     };
+                    group.GlobalContext.OptimizationLevel = Settings.Instance.OptimizationLevel;
                     group.QueueCodeReplace(code, sourceCode);
                     compileResult = group.Compile();
                 }

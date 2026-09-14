@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Underanalyzer;
 
 namespace UndertaleModToolAvalonia;
 
@@ -163,6 +164,11 @@ public partial class SettingsFile
     public bool AlwaysSaveDataInProjectDestination { get; set; } = true;
 
     public string InstanceIdPrefix { get; set; } = "inst_";
+
+    /// <summary>
+    /// Level of code optimization to apply when compiling GML code.
+    /// </summary>
+    public CompilerOptimizationLevel OptimizationLevel { get; set; } = CompilerOptimizationLevel.GameMaker;
 
     public Underanalyzer.Decompiler.DecompileSettings DecompileSettings { get; set; } = new();
 }

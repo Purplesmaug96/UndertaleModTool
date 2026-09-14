@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Underanalyzer;
 
 namespace UndertaleModTool
 {
@@ -39,6 +40,7 @@ namespace UndertaleModTool
         {
             Settings.Instance.DecompilerSettings.RestoreDefaults();
             Settings.Instance.InstanceIdPrefix = Settings.DefaultInstanceIdPrefix;
+            Settings.Instance.OptimizationLevel = CompilerOptimizationLevel.GameMaker;
 
             // Force all bindings to be updated
             DataContext = null;
@@ -61,6 +63,30 @@ namespace UndertaleModTool
                 DecompilerSettings.IndentStyleKind.TwoSpaces => "2 spaces",
                 DecompilerSettings.IndentStyleKind.Tabs => "Tabs",
                 _ => throw new Exception("Unknown indent style kind")
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value;
+        }
+    }
+
+    [ValueConversion(typeof(CompilerOptimizationLevel), typeof(string))]
+    public class OptimizationLevelConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is not CompilerOptimizationLevel level)
+            {
+                return null;
+            }
+            return level switch
+            {
+                CompilerOptimizationLevel.GameMaker => "GameMaker (default)",
+                CompilerOptimizationLevel.Safe => "Safe",
+                CompilerOptimizationLevel.Experimental => "Experimental",
+                _ => throw new Exception("Unknown optimization level")
             };
         }
 

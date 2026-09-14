@@ -298,6 +298,7 @@ public partial class UndertaleCodeViewModel : ObservableObject, IUndertaleResour
 
         CompileGroup group = new(MainVM.Data);
         group.MainThreadAction = Dispatcher.UIThread.Invoke;
+        group.GlobalContext.OptimizationLevel = MainVM.Settings.OptimizationLevel;
         group.QueueCodeReplace(Code, GMLTextDocument!.Text);
         CompileResult result = await Task.Run(() => group.Compile());
 

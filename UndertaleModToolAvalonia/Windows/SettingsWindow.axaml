@@ -55,6 +55,16 @@
 
             <Expander Classes="tree" Header="GML" IsExpanded="False">
                 <StackPanel Spacing="4">
+                    <Grid ColumnDefinitions="Auto,1*">
+                        <Label Content="Compiler optimization level:"
+                               ToolTip.Tip="Level of code optimization to apply when compiling GML code. &quot;GameMaker&quot; always produces output identical to official GameMaker compilers; higher levels may deviate from that output."/>
+                        <ComboBox Grid.Column="1" SelectedIndex="{Binding MainVM.Settings.OptimizationLevel}">
+                            <ComboBoxItem>GameMaker (default)</ComboBoxItem>
+                            <ComboBoxItem>Safe</ComboBoxItem>
+                            <ComboBoxItem>Experimental</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+
                     <CheckBox Content="Use CSS hex color literals"
                               ToolTip.Tip="If enabled, color constants can be formatted in the #RRGGBB hex format."
                               IsChecked="{Binding MainVM.Settings.DecompileSettings.UseCSSColors}"/>

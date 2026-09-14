@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UndertaleModTool"
+        xmlns:underan="clr-namespace:Underanalyzer;assembly=Underanalyzer"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:Settings}"
@@ -15,7 +16,13 @@
                 <x:Type TypeName="local:DecompilerSettings+IndentStyleKind" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="OptimizationLevels">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="underan:CompilerOptimizationLevel" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         <local:IndentStyleConverter x:Key="IndentStyleConverter"/>
+        <local:OptimizationLevelConverter x:Key="OptimizationLevelConverter"/>
     </Window.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
@@ -35,6 +42,17 @@
 
                 <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" Content="Use CSS hex color literals" ToolTip="If enabled, color constants can be formatted in the #RRGGBB hex format."
                     IsChecked="{Binding DecompilerSettings.UseCSSColors}"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="3,3,3,3" Text="Compiler optimization level:"
+                           ToolTip="Level of code optimization to apply when compiling GML code. &quot;GameMaker&quot; always produces output identical to official GameMaker compilers; higher levels may deviate from that output."/>
+                <local:ComboBoxDark Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="3,3,6,3"
+                    ItemsSource="{Binding Source={StaticResource OptimizationLevels}}" SelectedItem="{Binding OptimizationLevel}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource OptimizationLevelConverter}}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </local:ComboBoxDark>
 
                 <TextBlock Grid.Row="1" Grid.Column="2" Margin="3" Text="Named instance ID prefix:" ToolTip="Prefix used for named instance IDs when found by decompiler, and for compilation. Change this value if it conflicts with variable names."/>
                 <local:TextBoxDark Grid.Row="1" Grid.Column="3" Margin="3" Grid.ColumnSpan="1" 

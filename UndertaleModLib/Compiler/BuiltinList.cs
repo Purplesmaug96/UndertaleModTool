@@ -85,6 +85,14 @@ public record FunctionInfo : IBuiltinFunction
         IsPure = isPure;
     }
 
+    public FunctionInfo(string name, int numArgs, bool isPure)
+    {
+        Name = name;
+        MinArguments = numArgs;
+        MaxArguments = numArgs;
+        IsPure = isPure;
+    }
+
     public FunctionInfo(string name, int numArgs, FunctionClassification classification)
         : this(name, numArgs)
     {
@@ -215,6 +223,14 @@ public class BuiltinList : IBuiltins
     private void DefineFunction(string name, int numArgs, FunctionClassification classification)
     {
         Functions[name] = new FunctionInfo(name, numArgs, classification);
+    }
+
+    /// <summary>
+    /// Helper function to define a pure builtin function with a specific number of arguments.
+    /// </summary>
+    private void DefineFunction(string name, int numArgs, bool isPure)
+    {
+        Functions[name] = new FunctionInfo(name, numArgs, isPure);
     }
 
     /// <summary>
@@ -1429,42 +1445,42 @@ public class BuiltinList : IBuiltins
         {
             DefineFunction("random_use_old_version", 1);
         }
-        DefineFunction("abs", 1);
-        DefineFunction("round", 1);
-        DefineFunction("floor", 1);
-        DefineFunction("ceil", 1);
-        DefineFunction("sign", 1);
-        DefineFunction("frac", 1);
-        DefineFunction("sqrt", 1);
-        DefineFunction("sqr", 1);
-        DefineFunction("exp", 1);
-        DefineFunction("ln", 1);
-        DefineFunction("log2", 1);
-        DefineFunction("log10", 1);
-        DefineFunction("sin", 1);
-        DefineFunction("cos", 1);
-        DefineFunction("tan", 1);
-        DefineFunction("arcsin", 1);
-        DefineFunction("arccos", 1);
-        DefineFunction("arctan", 1);
-        DefineFunction("arctan2", 2);
-        DefineFunction("dsin", 1);
-        DefineFunction("dcos", 1);
-        DefineFunction("dtan", 1);
-        DefineFunction("darcsin", 1);
-        DefineFunction("darccos", 1);
-        DefineFunction("darctan", 1);
-        DefineFunction("darctan2", 2);
-        DefineFunction("degtorad", 1);
-        DefineFunction("radtodeg", 1);
-        DefineFunction("power", 2);
-        DefineFunction("logn", 2);
+        DefineFunction("abs", 1, isPure: true);
+        DefineFunction("round", 1, isPure: true);
+        DefineFunction("floor", 1, isPure: true);
+        DefineFunction("ceil", 1, isPure: true);
+        DefineFunction("sign", 1, isPure: true);
+        DefineFunction("frac", 1, isPure: true);
+        DefineFunction("sqrt", 1, isPure: true);
+        DefineFunction("sqr", 1, isPure: true);
+        DefineFunction("exp", 1, isPure: true);
+        DefineFunction("ln", 1, isPure: true);
+        DefineFunction("log2", 1, isPure: true);
+        DefineFunction("log10", 1, isPure: true);
+        DefineFunction("sin", 1, isPure: true);
+        DefineFunction("cos", 1, isPure: true);
+        DefineFunction("tan", 1, isPure: true);
+        DefineFunction("arcsin", 1, isPure: true);
+        DefineFunction("arccos", 1, isPure: true);
+        DefineFunction("arctan", 1, isPure: true);
+        DefineFunction("arctan2", 2, isPure: true);
+        DefineFunction("dsin", 1, isPure: true);
+        DefineFunction("dcos", 1, isPure: true);
+        DefineFunction("dtan", 1, isPure: true);
+        DefineFunction("darcsin", 1, isPure: true);
+        DefineFunction("darccos", 1, isPure: true);
+        DefineFunction("darctan", 1, isPure: true);
+        DefineFunction("darctan2", 2, isPure: true);
+        DefineFunction("degtorad", 1, isPure: true);
+        DefineFunction("radtodeg", 1, isPure: true);
+        DefineFunction("power", 2, isPure: true);
+        DefineFunction("logn", 2, isPure: true);
         DefineFunction("min", isPure: true);
         DefineFunction("max", isPure: true);
         if (!gms2_3)
         {
-            DefineFunction("min3", 3);
-            DefineFunction("max3", 3);
+            DefineFunction("min3", 3, isPure: true);
+            DefineFunction("max3", 3, isPure: true);
         }
         DefineFunction("mean");
         DefineFunction("median");

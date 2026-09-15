@@ -314,7 +314,7 @@ public class BuiltinList : IBuiltins
         if (wad >= 16)
         {
             DefineFunction("matrix_build_lookat", 9);
-            DefineFunction("matrix_build_identity", 0);
+            DefineFunction("matrix_build_identity", 0, isPure: true);
             DefineFunction("matrix_build_projection_ortho", 4);
             DefineFunction("matrix_build_projection_perspective", 4);
             DefineFunction("matrix_build_projection_perspective_fov", 4);
@@ -839,12 +839,12 @@ public class BuiltinList : IBuiltins
         {
             DefineFunction("collision_shape", 9);
         }
-        DefineFunction("point_in_rectangle", 6);
-        DefineFunction("point_in_triangle", 8);
-        DefineFunction("point_in_circle", 5);
-        DefineFunction("rectangle_in_rectangle", 8);
-        DefineFunction("rectangle_in_triangle", 10);
-        DefineFunction("rectangle_in_circle", 7);
+        DefineFunction("point_in_rectangle", 6, isPure: true);
+        DefineFunction("point_in_triangle", 8, isPure: true);
+        DefineFunction("point_in_circle", 5, isPure: true);
+        DefineFunction("rectangle_in_rectangle", 8, isPure: true);
+        DefineFunction("rectangle_in_triangle", 10, isPure: true);
+        DefineFunction("rectangle_in_circle", 7, isPure: true);
         DefineFunction("instance_find", 2);
         DefineFunction("instance_exists", 1);
         DefineFunction("instance_number", 1);
@@ -975,29 +975,29 @@ public class BuiltinList : IBuiltins
         DefineFunction("draw_get_color", 0);
         DefineFunction("draw_get_colour", 0);
         DefineFunction("draw_get_alpha", 0);
-        DefineFunction("merge_color", 3);
+        DefineFunction("merge_color", 3, isPure: true);
         if (!gms2_3)
         {
-            DefineFunction("make_color", 3);
-            DefineFunction("make_colour", 3);
+            DefineFunction("make_color", 3, isPure: true);
+            DefineFunction("make_colour", 3, isPure: true);
         }
-        DefineFunction("make_color_rgb", 3);
-        DefineFunction("make_color_hsv", 3);
-        DefineFunction("color_get_red", 1);
-        DefineFunction("color_get_green", 1);
-        DefineFunction("color_get_blue", 1);
-        DefineFunction("color_get_hue", 1);
-        DefineFunction("color_get_saturation", 1);
-        DefineFunction("color_get_value", 1);
-        DefineFunction("merge_colour", 3);
-        DefineFunction("make_colour_rgb", 3);
-        DefineFunction("make_colour_hsv", 3);
-        DefineFunction("colour_get_red", 1);
-        DefineFunction("colour_get_green", 1);
-        DefineFunction("colour_get_blue", 1);
-        DefineFunction("colour_get_hue", 1);
-        DefineFunction("colour_get_saturation", 1);
-        DefineFunction("colour_get_value", 1);
+        DefineFunction("make_color_rgb", 3, isPure: true);
+        DefineFunction("make_color_hsv", 3, isPure: true);
+        DefineFunction("color_get_red", 1, isPure: true);
+        DefineFunction("color_get_green", 1, isPure: true);
+        DefineFunction("color_get_blue", 1, isPure: true);
+        DefineFunction("color_get_hue", 1, isPure: true);
+        DefineFunction("color_get_saturation", 1, isPure: true);
+        DefineFunction("color_get_value", 1, isPure: true);
+        DefineFunction("merge_colour", 3, isPure: true);
+        DefineFunction("make_colour_rgb", 3, isPure: true);
+        DefineFunction("make_colour_hsv", 3, isPure: true);
+        DefineFunction("colour_get_red", 1, isPure: true);
+        DefineFunction("colour_get_green", 1, isPure: true);
+        DefineFunction("colour_get_blue", 1, isPure: true);
+        DefineFunction("colour_get_hue", 1, isPure: true);
+        DefineFunction("colour_get_saturation", 1, isPure: true);
+        DefineFunction("colour_get_value", 1, isPure: true);
         if (!gms2_3)
         {
             DefineFunction("draw_set_blend_mode", 1);
@@ -1323,27 +1323,27 @@ public class BuiltinList : IBuiltins
         }
         if (wad >= 15)
         {
-            DefineFunction("is_bool", 1);
+            DefineFunction("is_bool", 1, isPure: true);
         }
-        DefineFunction("is_real", 1);
-        DefineFunction("is_string", 1);
-        DefineFunction("is_array", 1);
-        DefineFunction("is_undefined", 1);
-        DefineFunction("is_int32", 1);
-        DefineFunction("is_int64", 1);
+        DefineFunction("is_real", 1, isPure: true);
+        DefineFunction("is_string", 1, isPure: true);
+        DefineFunction("is_array", 1, isPure: true);
+        DefineFunction("is_undefined", 1, isPure: true);
+        DefineFunction("is_int32", 1, isPure: true);
+        DefineFunction("is_int64", 1, isPure: true);
         DefineFunction("is_ptr", 1);
         DefineFunction("is_vec3", 1);
         DefineFunction("is_vec4", 1);
         DefineFunction("is_matrix", 1);
         if (gms2_3)
         {
-            DefineFunction("is_numeric", 1);
-            DefineFunction("is_nan", 1);
-            DefineFunction("is_infinity", 1);
-            DefineFunction("is_struct", 1);
-            DefineFunction("is_method", 1);
+            DefineFunction("is_numeric", 1, isPure: true);
+            DefineFunction("is_nan", 1, isPure: true);
+            DefineFunction("is_infinity", 1, isPure: true);
+            DefineFunction("is_struct", 1, isPure: true);
+            DefineFunction("is_method", 1, isPure: true);
             DefineFunction("is_instanceof", 2);
-            DefineFunction("is_callable", 1);
+            DefineFunction("is_callable", 1, isPure: true);
             DefineFunction("is_handle", 1);
         }
         DefineFunction("array_length_1d", 1);
@@ -1362,7 +1362,7 @@ public class BuiltinList : IBuiltins
             DefineFunction("array_equals", 2);
             DefineFunction("array_create");
             DefineFunction("array_copy", 5);
-            DefineFunction("typeof", 1);
+            DefineFunction("typeof", 1, isPure: true);
         }
         if (gms2_3)
         {
@@ -1482,57 +1482,57 @@ public class BuiltinList : IBuiltins
             DefineFunction("min3", 3, isPure: true);
             DefineFunction("max3", 3, isPure: true);
         }
-        DefineFunction("mean");
-        DefineFunction("median");
+        DefineFunction("mean", isPure: true);
+        DefineFunction("median", isPure: true);
         DefineFunction("choose");
-        DefineFunction("clamp", 3);
-        DefineFunction("lerp", 3);
-        DefineFunction("dot_product", 4);
-        DefineFunction("dot_product_3d", 6);
-        DefineFunction("dot_product_normalised", 4);
-        DefineFunction("dot_product_3d_normalised", 6);
+        DefineFunction("clamp", 3, isPure: true);
+        DefineFunction("lerp", 3, isPure: true);
+        DefineFunction("dot_product", 4, isPure: true);
+        DefineFunction("dot_product_3d", 6, isPure: true);
+        DefineFunction("dot_product_normalised", 4, isPure: true);
+        DefineFunction("dot_product_3d_normalised", 6, isPure: true);
         if (wad >= 16)
         {
-            DefineFunction("dot_product_normalized", 4);
-            DefineFunction("dot_product_3d_normalized", 6);
+            DefineFunction("dot_product_normalized", 4, isPure: true);
+            DefineFunction("dot_product_3d_normalized", 6, isPure: true);
         }
         DefineFunction("math_set_epsilon", 1);
         DefineFunction("math_get_epsilon", 0);
-        DefineFunction("angle_difference", 2);
-        DefineFunction("real", 1);
+        DefineFunction("angle_difference", 2, isPure: true);
+        DefineFunction("real", 1, isPure: true);
         if (gms2)
         {
-            DefineFunction("bool", 1);
+            DefineFunction("bool", 1, isPure: true);
         }
-        DefineFunction("string", 1);
-        DefineFunction("int64", 1);
-        DefineFunction("ptr", 1);
-        DefineFunction("string_format", 3);
-        DefineFunction("chr", 1);
+        DefineFunction("string", 1, isPure: true);
+        DefineFunction("int64", 1, isPure: true);
+        DefineFunction("ptr", 1, isPure: true);
+        DefineFunction("string_format", 3, isPure: true);
+        DefineFunction("chr", 1, isPure: true);
         DefineFunction("ansi_char", 1);
-        DefineFunction("ord", 1);
-        DefineFunction("string_length", 1);
-        DefineFunction("string_byte_length", 1);
-        DefineFunction("string_pos", 2);
-        DefineFunction("string_copy", 3);
-        DefineFunction("string_char_at", 2);
-        DefineFunction("string_ord_at", 2);
+        DefineFunction("ord", 1, isPure: true);
+        DefineFunction("string_length", 1, isPure: true);
+        DefineFunction("string_byte_length", 1, isPure: true);
+        DefineFunction("string_pos", 2, isPure: true);
+        DefineFunction("string_copy", 3, isPure: true);
+        DefineFunction("string_char_at", 2, isPure: true);
+        DefineFunction("string_ord_at", 2, isPure: true);
         DefineFunction("string_byte_at", 2);
         DefineFunction("string_set_byte_at", 3);
-        DefineFunction("string_delete", 3);
-        DefineFunction("string_insert", 3);
-        DefineFunction("string_lower", 1);
-        DefineFunction("string_upper", 1);
-        DefineFunction("string_repeat", 2);
-        DefineFunction("string_letters", 1);
-        DefineFunction("string_digits", 1);
-        DefineFunction("string_lettersdigits", 1);
-        DefineFunction("string_replace", 3);
-        DefineFunction("string_replace_all", 3);
-        DefineFunction("string_count", 2);
+        DefineFunction("string_delete", 3, isPure: true);
+        DefineFunction("string_insert", 3, isPure: true);
+        DefineFunction("string_lower", 1, isPure: true);
+        DefineFunction("string_upper", 1, isPure: true);
+        DefineFunction("string_repeat", 2, isPure: true);
+        DefineFunction("string_letters", 1, isPure: true);
+        DefineFunction("string_digits", 1, isPure: true);
+        DefineFunction("string_lettersdigits", 1, isPure: true);
+        DefineFunction("string_replace", 3, isPure: true);
+        DefineFunction("string_replace_all", 3, isPure: true);
+        DefineFunction("string_count", 2, isPure: true);
         if (wad >= 16)
         {
-            DefineFunction("string_hash_to_newline", 1);
+            DefineFunction("string_hash_to_newline", 1, isPure: true);
         }
         if (gms2_3)
         {
@@ -1543,9 +1543,9 @@ public class BuiltinList : IBuiltins
             DefineFunction("string_trim_start", 1);
             DefineFunction("string_trim_end", 1);
             DefineFunction("string_trim", 1);
-            DefineFunction("string_starts_with", 2);
-            DefineFunction("string_ends_with", 2);
-            DefineFunction("string_split", 2);
+            DefineFunction("string_starts_with", 2, isPure: true);
+            DefineFunction("string_ends_with", 2, isPure: true);
+            DefineFunction("string_split", 2, isPure: true);
             DefineFunction("string_split_ext", 2);
             DefineFunction("string_join");
             DefineFunction("string_join_ext", 2);
@@ -1553,11 +1553,11 @@ public class BuiltinList : IBuiltins
             DefineFunction("string_concat_ext", 1);
             DefineFunction("string_foreach", 2);
         }
-        DefineFunction("point_distance", 4);
-        DefineFunction("point_distance_3d", 6);
-        DefineFunction("point_direction", 4);
-        DefineFunction("lengthdir_x", 2);
-        DefineFunction("lengthdir_y", 2);
+        DefineFunction("point_distance", 4, isPure: true);
+        DefineFunction("point_distance_3d", 6, isPure: true);
+        DefineFunction("point_direction", 4, isPure: true);
+        DefineFunction("lengthdir_x", 2, isPure: true);
+        DefineFunction("lengthdir_y", 2, isPure: true);
         DefineFunction("event_inherited", 0);
         DefineFunction("event_perform", 2);
         DefineFunction("event_user", 1);

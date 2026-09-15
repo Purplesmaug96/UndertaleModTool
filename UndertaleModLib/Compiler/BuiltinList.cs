@@ -60,6 +60,9 @@ public record FunctionInfo : IBuiltinFunction
     /// </summary>
     public FunctionClassification Classification { get; } = FunctionClassification.None;
 
+    /// <inheritdoc/>
+    public bool IsPure { get; } = false;
+
     public FunctionInfo(string name, int numArgs)
     {
         Name = name;
@@ -72,6 +75,14 @@ public record FunctionInfo : IBuiltinFunction
         Name = name;
         MinArguments = minNumArgs;
         MaxArguments = maxNumArgs;
+    }
+
+    public FunctionInfo(string name, int minNumArgs, int maxNumArgs, bool isPure)
+    {
+        Name = name;
+        MinArguments = minNumArgs;
+        MaxArguments = maxNumArgs;
+        IsPure = isPure;
     }
 
     public FunctionInfo(string name, int numArgs, FunctionClassification classification)
@@ -204,6 +215,14 @@ public class BuiltinList : IBuiltins
     private void DefineFunction(string name, int numArgs, FunctionClassification classification)
     {
         Functions[name] = new FunctionInfo(name, numArgs, classification);
+    }
+
+    /// <summary>
+    /// Helper function to define a pure builtin function with any number of arguments.
+    /// </summary>
+    private void DefineFunction(string name, bool isPure)
+    {
+        Functions[name] = new FunctionInfo(name, 0, int.MaxValue, isPure);
     }
 
     /// <summary>
@@ -1440,8 +1459,8 @@ public class BuiltinList : IBuiltins
         DefineFunction("radtodeg", 1);
         DefineFunction("power", 2);
         DefineFunction("logn", 2);
-        DefineFunction("min");
-        DefineFunction("max");
+        DefineFunction("min", isPure: true);
+        DefineFunction("max", isPure: true);
         if (!gms2_3)
         {
             DefineFunction("min3", 3);

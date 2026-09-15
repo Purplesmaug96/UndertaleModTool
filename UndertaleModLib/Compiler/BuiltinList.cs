@@ -742,12 +742,12 @@ public class BuiltinList : IBuiltins
         DefineFunction("file_find_next", 0);
         DefineFunction("file_find_close", 0);
         DefineFunction("file_attributes", 2);
-        DefineFunction("filename_name", 1);
+        DefineFunction("filename_name", 1, isPure: true);
         DefineFunction("filename_path", 1);
         DefineFunction("filename_dir", 1);
         DefineFunction("filename_drive", 1);
         DefineFunction("filename_ext", 1);
-        DefineFunction("filename_change_ext", 2);
+        DefineFunction("filename_change_ext", 2, isPure: true);
         DefineFunction("parameter_count", 0);
         DefineFunction("parameter_string", 1);
         DefineFunction("environment_get_variable", 1);
@@ -1346,13 +1346,13 @@ public class BuiltinList : IBuiltins
             DefineFunction("is_callable", 1, isPure: true);
             DefineFunction("is_handle", 1);
         }
-        DefineFunction("array_length_1d", 1);
-        DefineFunction("array_length_2d", 2);
-        DefineFunction("array_height_2d", 1);
+        DefineFunction("array_length_1d", 1, isPure: true);
+        DefineFunction("array_length_2d", 2, isPure: true);
+        DefineFunction("array_height_2d", 1, isPure: true);
         DefineFunction("array_set", 3);
         DefineFunction("array_set_pre", 3);
         DefineFunction("array_set_post", 3);
-        DefineFunction("array_get", 2);
+        DefineFunction("array_get", 2, isPure: true);
         DefineFunction("array_set_2D", 4);
         DefineFunction("array_set_2D_pre", 4);
         DefineFunction("array_set_2D_post", 4);
@@ -1360,13 +1360,13 @@ public class BuiltinList : IBuiltins
         if (wad >= 16) 
         {
             DefineFunction("array_equals", 2);
-            DefineFunction("array_create");
+            DefineFunction("array_create", isPure: true);
             DefineFunction("array_copy", 5);
             DefineFunction("typeof", 1, isPure: true);
         }
         if (gms2_3)
         {
-            DefineFunction("array_length", 1);
+            DefineFunction("array_length", 1, isPure: true);
             DefineFunction("array_resize", 2);
             DefineFunction("array_push");
             DefineFunction("array_pop", 1);
@@ -2327,8 +2327,8 @@ public class BuiltinList : IBuiltins
         }
         DefineFunction("os_is_paused", 0);
         DefineFunction("window_has_focus", 0);
-        DefineFunction("base64_encode", 1);
-        DefineFunction("base64_decode", 1);
+        DefineFunction("base64_encode", 1, isPure: true);
+        DefineFunction("base64_decode", 1, isPure: true);
         DefineFunction("md5_string_unicode", 1);
         DefineFunction("md5_string_utf8", 1);
         DefineFunction("md5_file", 1);

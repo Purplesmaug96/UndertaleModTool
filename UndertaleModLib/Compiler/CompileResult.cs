@@ -45,6 +45,31 @@ public readonly struct CompileError
     }
 
     /// <summary>
+    /// Attempts to retrieve the position of this error in the source code it originated from.
+    /// Line and column numbers are one-indexed, and width is measured in characters.
+    /// </summary>
+    /// <remarks>
+    /// If the error originated inside a macro, the returned position is relative to that
+    /// macro's text, rather than to the code entry being compiled.
+    /// </remarks>
+    /// <param name="line">One-indexed line number of the error.</param>
+    /// <param name="column">One-indexed column number of the error.</param>
+    /// <param name="width">Width of the error in characters (at least 1).</param>
+    /// <returns>Whether a position could be determined for this error.</returns>
+    public bool TryGetPosition(out int line, out int column, out int width)
+    {
+        if (_sourceError is not null)
+        {
+            return _sourceError.TryGetPosition(out line, out column, out width);
+        }
+
+        line = 0;
+        column = 0;
+        width = 0;
+        return false;
+    }
+
+    /// <summary>
     /// Creates a compile error struct with the given code entry and source error from the inner compiler.
     /// </summary>
     internal CompileError(UndertaleCode code, ICompileError sourceError)

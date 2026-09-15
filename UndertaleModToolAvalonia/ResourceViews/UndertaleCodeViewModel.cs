@@ -48,6 +48,12 @@ public partial class UndertaleCodeViewModel : ObservableObject, IUndertaleResour
     public partial TextDocument? ASMTextDocument { get; set; }
 
     [ObservableProperty]
+    public partial IReadOnlyList<CodeDiagnostic> GMLDiagnostics { get; set; } = Array.Empty<CodeDiagnostic>();
+
+    [ObservableProperty]
+    public partial IReadOnlyList<CodeDiagnostic> ASMDiagnostics { get; set; } = Array.Empty<CodeDiagnostic>();
+
+    [ObservableProperty]
     public partial bool IsCodeProcessing { get; set; } = false;
 
     public bool IsCompiled
@@ -306,11 +312,22 @@ public partial class UndertaleCodeViewModel : ObservableObject, IUndertaleResour
         {
             GMLTabState = TabState.Error;
 
-            loaderWindow?.EnsureShown();
-            await MainVM.View!.MessageDialog(result.PrintAllErrors(codeEntryNames: false),
-                title: "GML compilation error - UndertaleModTooAvalonia v" + App.VersionString);
+            (List<CodeDiagnostic> diagnostics, List<string> unlocatedErrors) = BuildDiagnostics(result.Errors);
+            GMLDiagnostics = diagnostics;
+
+            // Errors with no usable source position (e.g. inside macros, or unexpected
+            // exceptions) can't be shown as squiggly lines, so fall back to a dialog.
+            if (unlocatedErrors.Count > 0)
+            {
+                loaderWindow?.EnsureShown();
+                await MainVM.View!.MessageDialog(String.Join("\n", unlocatedErrors),
+                    title: "GML compilation error - UndertaleModTooAvalonia v" + App.VersionString);
+            }
+
             return false;
         }
+
+        GMLDiagnostics = Array.Empty<CodeDiagnostic>();
 
         if (MainVM.Project is not null)
         {
@@ -398,5 +415,35 @@ public partial class UndertaleCodeViewModel : ObservableObject, IUndertaleResour
         ASMTabState = TabState.NeedsDecompile; // TODO: Maybe not?
 
         return true;
+    }
+
+    /// <summary>
+    /// Converts compile errors into editor diagnostics, separating out any errors that
+    /// couldn't be mapped to a source position.
+    /// </summary>
+    static (List<CodeDiagnostic> Diagnostics, List<string> UnlocatedErrors) BuildDiagnostics(IEnumerable<CompileError>? errors)
+    {
+        List<CodeDiagnostic> diagnostics = [];
+        List<string> unlocatedErrors = [];
+
+        if (errors is null)
+        {
+            unlocatedErrors.Add("(unknown errors occurred)");
+            return (diagnostics, unlocatedErrors);
+        }
+
+        foreach (CompileError error in errors)
+        {
+            if (error.TryGetPosition(out int line, out int column, out int width))
+            {
+                diagnostics.Add(new CodeDiagnostic(CodeDiagnosticSeverity.Error, line, column, width, error.BaseMessage));
+            }
+            else
+            {
+                unlocatedErrors.Add(error.GenerateDetailedMessage());
+            }
+        }
+
+        return (diagnostics, unlocatedErrors);
     }
 }

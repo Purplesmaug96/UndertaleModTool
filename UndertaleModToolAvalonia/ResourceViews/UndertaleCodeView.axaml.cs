@@ -40,6 +40,11 @@ public partial class UndertaleCodeView : UserControl
     readonly NameGenerator gmlNameGenerator;
     readonly NameGenerator asmNameGenerator;
 
+    readonly CodeDiagnosticRenderer gmlDiagnosticRenderer = new();
+    readonly CodeDiagnosticRenderer asmDiagnosticRenderer = new();
+
+    readonly List<PointerHoverLogic> diagnosticHoverLogics = [];
+
     (TextLocation, TextLocation) lastCaretLocations;
 
     public UndertaleCodeView()
@@ -52,6 +57,12 @@ public partial class UndertaleCodeView : UserControl
 
         InitializeTextEditor(GMLTextEditor);
         InitializeTextEditor(ASMTextEditor);
+
+        GMLTextEditor.TextArea.TextView.BackgroundRenderers.Add(gmlDiagnosticRenderer);
+        ASMTextEditor.TextArea.TextView.BackgroundRenderers.Add(asmDiagnosticRenderer);
+
+        diagnosticHoverLogics.Add(SetupDiagnosticHover(GMLTextEditor, gmlDiagnosticRenderer));
+        diagnosticHoverLogics.Add(SetupDiagnosticHover(ASMTextEditor, asmDiagnosticRenderer));
 
         GMLTextEditor.TextArea.GotFocus += GMLTextEditor_GotFocus;
         ASMTextEditor.TextArea.GotFocus += ASMTextEditor_GotFocus;
@@ -123,6 +134,9 @@ public partial class UndertaleCodeView : UserControl
             vm.GMLTabState = TabState.NeedsDecompile;
             vm.ASMTabState = TabState.NeedsDecompile;
 
+            ClearDiagnostics(GMLTextEditor, gmlDiagnosticRenderer);
+            ClearDiagnostics(ASMTextEditor, asmDiagnosticRenderer);
+
             await GoToLastGoToLocation();
             await vm.DecompileCurrent();
 
@@ -153,6 +167,16 @@ public partial class UndertaleCodeView : UserControl
 
                 case nameof(UndertaleCodeViewModel.LastGoToLocation):
                     _ = GoToLastGoToLocation();
+                    break;
+
+                case nameof(UndertaleCodeViewModel.GMLDiagnostics):
+                    gmlDiagnosticRenderer.SetDiagnostics(GMLTextEditor.Document, vm.GMLDiagnostics);
+                    GMLTextEditor.TextArea.TextView.InvalidateLayer(gmlDiagnosticRenderer.Layer);
+                    break;
+
+                case nameof(UndertaleCodeViewModel.ASMDiagnostics):
+                    asmDiagnosticRenderer.SetDiagnostics(ASMTextEditor.Document, vm.ASMDiagnostics);
+                    ASMTextEditor.TextArea.TextView.InvalidateLayer(asmDiagnosticRenderer.Layer);
                     break;
             }
         }
@@ -266,6 +290,50 @@ public partial class UndertaleCodeView : UserControl
         textEditor.Options.HighlightCurrentLine = true;
     }
 
+    static PointerHoverLogic SetupDiagnosticHover(TextEditor textEditor, CodeDiagnosticRenderer renderer)
+    {
+        PointerHoverLogic hoverLogic = new(textEditor);
+
+        hoverLogic.PointerHover += (_, e) =>
+        {
+            string? message = GetDiagnosticMessage(textEditor, renderer, e);
+            if (message is null)
+            {
+                ToolTip.SetIsOpen(textEditor, false);
+                return;
+            }
+
+            ToolTip.SetTip(textEditor, message);
+            ToolTip.SetIsOpen(textEditor, true);
+        };
+
+        hoverLogic.PointerHoverStopped += (_, _) => ToolTip.SetIsOpen(textEditor, false);
+
+        return hoverLogic;
+    }
+
+    static string? GetDiagnosticMessage(TextEditor textEditor, CodeDiagnosticRenderer renderer, PointerEventArgs e)
+    {
+        if (textEditor.Document is not TextDocument document)
+            return null;
+
+        TextView textView = textEditor.TextArea.TextView;
+        TextViewPosition? position = textView.GetPosition(e.GetPosition(textView));
+        if (position is not TextViewPosition value)
+            return null;
+
+        return renderer.GetMessageAtOffset(document.GetOffset(value.Location));
+    }
+
+    static void ClearDiagnostics(TextEditor textEditor, CodeDiagnosticRenderer renderer)
+    {
+        if (!renderer.HasMarkers)
+            return;
+
+        renderer.Clear();
+        textEditor.TextArea.TextView.InvalidateLayer(renderer.Layer);
+    }
+
     public async Task GoToLastGoToLocation()
     {
         if (DataContext is not UndertaleCodeViewModel vm)
@@ -356,6 +424,7 @@ public partial class UndertaleCodeView : UserControl
         {
             vm.GMLTabState = TabState.NeedsCompile;
             vm.MainVM.Project?.MarkAssetForExport(vm.Code);
+            ClearDiagnostics(GMLTextEditor, gmlDiagnosticRenderer);
         }
     }
 
@@ -367,6 +436,7 @@ public partial class UndertaleCodeView : UserControl
         if (!vm.IsCodeProcessing)
         {
             vm.ASMTabState = TabState.NeedsCompile;
+            ClearDiagnostics(ASMTextEditor, asmDiagnosticRenderer);
         }
     }
 

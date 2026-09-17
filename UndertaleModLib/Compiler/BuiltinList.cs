@@ -3332,7 +3332,6 @@ public class BuiltinList : IBuiltins
         if (major >= 2023)
         {
             DefineFunction("move_and_collide", 3);
-            DefineFunction("game_change", 2);
             DefineFunction("is_debug_overlay_open", 0);
             DefineFunction("show_debug_log", 1);
             DefineFunction("dbg_view");

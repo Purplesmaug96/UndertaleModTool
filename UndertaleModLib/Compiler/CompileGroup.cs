@@ -387,10 +387,109 @@ public sealed class CompileGroup
         // If queue hasn't been created yet, create an empty one
         _queuedCodeReplacements ??= new();
 
-        // If global scripts are present in the replacement queue, parse their code in advance to collect global functions
-        List<CompileContext> globalScriptContexts = null;
+        // GameMaker scopes macros and enums project-wide, but Underanalyzer only resolves them within
+        // the individual code entry that declares them. If any queued code declares macros or enums,
+        // parse everything once up front to gather those declarations, so that they can be injected
+        // into every compile context before it is parsed.
+        Dictionary<string, GMEnum> globalEnums = null;
+        Dictionary<string, Underanalyzer.Compiler.Lexer.Macro> globalMacros = null;
+        List<HashSet<string>> declaredEnums = null;
+        List<HashSet<string>> declaredMacros = null;
+        bool needsGlobalDeclarations = false;
         foreach (QueuedOperation operation in _queuedCodeReplacements)
         {
+            string operationCode = operation.Code;
+            if (operationCode is not null &&
+                (operationCode.Contains("#macro", StringComparison.Ordinal) || operationCode.Contains("enum", StringComparison.Ordinal)))
+            {
+                needsGlobalDeclarations = true;
+                break;
+            }
+        }
+        if (needsGlobalDeclarations)
+        {
+            declaredEnums = new(_queuedCodeReplacements.Count);
+            declaredMacros = new(_queuedCodeReplacements.Count);
+            foreach (QueuedOperation operation in _queuedCodeReplacements)
+            {
+                // Guess script kind and global script name, based on code entry name
+                (CompileScriptKind scriptKind, string globalScriptName) = GuessScriptKindFromName(operation.CodeEntry.Name?.Content);
+
+                // Create a throwaway context and parse it, ignoring any errors (the real compile reports those)
+                CompileContext context = new(operation.Code, scriptKind, globalScriptName, GlobalContext);
+                try
+                {
+                    context.Parse();
+                }
+                catch
+                {
+                    // Ignore parse failures during declaration gathering
+                }
+
+                // Gather enums declared by this code entry, merging same-named enums across code entries
+                HashSet<string> enumNames = new(context.Enums.Count);
+                foreach ((string enumName, GMEnum enumValue) in context.Enums)
+                {
+                    enumNames.Add(enumName);
+                    globalEnums ??= new();
+                    if (globalEnums.TryGetValue(enumName, out GMEnum existingEnum))
+                    {
+                        existingEnum.AddNewValuesFrom(enumValue);
+                    }
+                    else
+                    {
+                        globalEnums[enumName] = new GMEnum(enumValue);
+                    }
+                }
+                declaredEnums.Add(enumNames);
+
+                // Gather macros declared by this code entry
+                HashSet<string> macroNames = new(context.Macros.Count);
+                foreach ((string macroName, Underanalyzer.Compiler.Lexer.Macro macroValue) in context.Macros)
+                {
+                    macroNames.Add(macroName);
+                    globalMacros ??= new();
+                    globalMacros.TryAdd(macroName, macroValue);
+                }
+                declaredMacros.Add(macroNames);
+            }
+        }
+
+        // Injects gathered project-wide macros and enums into a compile context, before it is parsed.
+        // Declarations made by the context's own code entry are skipped, to avoid duplicate declaration errors.
+        void InjectGlobalDeclarations(CompileContext context, int operationIndex)
+        {
+            if (globalEnums is not null)
+            {
+                HashSet<string> ownEnums = declaredEnums[operationIndex];
+                foreach ((string enumName, GMEnum enumValue) in globalEnums)
+                {
+                    if (!ownEnums.Contains(enumName))
+                    {
+                        context.Enums[enumName] = new GMEnum(enumValue);
+                    }
+                }
+            }
+            if (globalMacros is not null)
+            {
+                HashSet<string> ownMacros = declaredMacros[operationIndex];
+                foreach ((string macroName, Underanalyzer.Compiler.Lexer.Macro macroValue) in globalMacros)
+                {
+                    if (!ownMacros.Contains(macroName))
+                    {
+                        context.Macros[macroName] = macroValue;
+                    }
+                }
+            }
+        }
+
+        // If global scripts are present in the replacement queue, parse their code in advance to collect global functions
+        List<CompileContext> globalScriptContexts = null;
+        int globalScriptParseIndex = 0;
+        foreach (QueuedOperation operation in _queuedCodeReplacements)
+        {
+            int operationIndex = globalScriptParseIndex++;
+
             // Guess script kind and global script name, based on code entry name
             (CompileScriptKind scriptKind, string globalScriptName) = GuessScriptKindFromName(operation.CodeEntry.Name?.Content);
 
@@ -402,6 +501,9 @@ public sealed class CompileGroup
 
             // Create a compile context early
             CompileContext context = new(operation.Code, scriptKind, globalScriptName, GlobalContext);
+
+            // Inject project-wide declarations gathered above, before parsing
+            InjectGlobalDeclarations(context, operationIndex);
 
             // Perform parse
             try
@@ -473,8 +575,11 @@ public sealed class CompileGroup
 
         // Work through replacement queue, for main compilation and linking
         int globalScriptContextIndex = 0;
+        int mainCompileIndex = 0;
         foreach (QueuedOperation operation in _queuedCodeReplacements)
         {
+            int operationIndex = mainCompileIndex++;
+
             // Guess script kind and global script name, based on code entry name
             (CompileScriptKind scriptKind, string globalScriptName) = GuessScriptKindFromName(operation.CodeEntry.Name?.Content);
 
@@ -497,6 +602,9 @@ public sealed class CompileGroup
             {
                 // Create a brand new compile context
                 context = new(operation.Code, scriptKind, globalScriptName, GlobalContext);
+
+                // Inject project-wide declarations gathered above, before parsing
+                InjectGlobalDeclarations(context, operationIndex);
             }
             else
             {

@@ -937,6 +937,7 @@ public class BuiltinList : IBuiltins
         }
         DefineFunction("window_set_fullscreen", 1);
         DefineFunction("window_get_fullscreen", 0);
+        DefineFunction("window_enable_borderless_fullscreen", 1);
         DefineFunction("window_set_caption", 1);
         DefineFunction("window_get_caption", 0);
         DefineFunction("window_set_cursor", 1);

@@ -22,6 +22,30 @@ public partial class UndertaleEmbeddedTextureViewModel : IUndertaleResourceViewM
         EmbeddedTexture = embeddedTexture;
     }
 
+    /// <summary>
+    /// Returns the texture page item drawn at this pixel of the texture, if any.
+    /// </summary>
+    public UndertaleTexturePageItem? FindItemAt(double x, double y)
+    {
+        // Looked up every time rather than cached, since scripts or imports can add items or move them between textures.
+        foreach (UndertaleTexturePageItem item in MainVM.Data!.TexturePageItems)
+        {
+            if (item.TexturePage != EmbeddedTexture)
+                continue;
+
+            bool isInsideX = x >= item.SourceX && x < item.SourceX + item.SourceWidth;
+            bool isInsideY = y >= item.SourceY && y < item.SourceY + item.SourceHeight;
+            if (isInsideX && isInsideY)
+                return item;
+        }
+        return null;
+    }
+
+    public async void OpenItem(UndertaleTexturePageItem item, bool inNewTab)
+    {
+        await MainVM.Tabs.TabOpen(item, inNewTab);
+    }
+
     public async void ImportImage()
     {
         // TODO: Allow formats other than PNG, either directly or to convert it

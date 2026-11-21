@@ -8,6 +8,7 @@ using System.Xml;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Platform;
@@ -46,6 +47,9 @@ public partial class UndertaleCodeView : UserControl
     readonly List<PointerHoverLogic> diagnosticHoverLogics = [];
 
     (TextLocation, TextLocation) lastCaretLocations;
+
+    // TODO: Don't use static variable
+    private static double ZoomFontSize = -1;
 
     public UndertaleCodeView()
     {
@@ -284,8 +288,11 @@ public partial class UndertaleCodeView : UserControl
         ASMTextEditor.TextArea.TextView.Redraw();
     }
 
-    static void InitializeTextEditor(TextEditor textEditor)
+    void InitializeTextEditor(TextEditor textEditor)
     {
+        textEditor.AddHandler(PointerWheelChangedEvent, TextEditor_MouseWheelChanged, RoutingStrategies.Tunnel);
+        textEditor.AddHandler(KeyDownEvent, TextEditor_KeyDown, RoutingStrategies.Tunnel);
+
         textEditor.Options.ConvertTabsToSpaces = true;
         textEditor.Options.HighlightCurrentLine = true;
     }
@@ -437,6 +444,72 @@ public partial class UndertaleCodeView : UserControl
         {
             vm.ASMTabState = TabState.NeedsCompile;
             ClearDiagnostics(ASMTextEditor, asmDiagnosticRenderer);
+        }
+    }
+
+    private void TextEditor_MouseWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+        {
+            e.Handled = true;
+            AddZoomFontSize(Math.Sign(e.Delta.Y));
+        }
+    }
+
+    private void TextEditor_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+        {
+            if (e.PhysicalKey is PhysicalKey.Equal or PhysicalKey.NumPadAdd)
+            {
+                e.Handled = true;
+                AddZoomFontSize(1);
+            }
+            else if (e.PhysicalKey is PhysicalKey.Minus or PhysicalKey.NumPadSubtract)
+            {
+                e.Handled = true;
+                AddZoomFontSize(-1);
+            }
+        }
+    }
+
+    private void AddZoomFontSize(double zoomValue)
+    {
+        if (ZoomFontSize == -1)
+        {
+            // NOTE: Bad
+            ZoomFontSize = GMLTextEditor.FontSize;
+        }
+
+        ZoomFontSize = Math.Clamp(Math.Floor(ZoomFontSize + zoomValue), 1, double.PositiveInfinity);
+
+        IEnumerable<TextEditor> list = [GMLTextEditor, ASMTextEditor];
+        foreach (TextEditor textEditor in list)
+        {
+            TextView view = textEditor.TextArea.TextView;
+
+            var line1 = view.GetDocumentLineByVisualTop(view.ScrollOffset.Y);
+            var lineToScrollTo = line1.LineNumber;
+
+            var line2 = line1.NextLine;
+
+            if (line2 != null)
+            {
+                var line1Top = view.GetVisualTopByDocumentLine(line1.LineNumber);
+                var line2Top = view.GetVisualTopByDocumentLine(line2.LineNumber);
+
+                var height = (line2Top - line1Top);
+
+                var yAboveScrollOffset = view.ScrollOffset.Y - line1Top;
+
+                // If more than halfway above the scroll offset, jump to next line
+                if (yAboveScrollOffset > height / 2)
+                    lineToScrollTo = line2.LineNumber;
+            }
+
+            textEditor.FontSize = ZoomFontSize;
+
+            textEditor.ScrollTo(lineToScrollTo, 1, VisualYPosition.LineTop, 0, 0);
         }
     }
 
@@ -898,6 +971,17 @@ public partial class UndertaleCodeView : UserControl
             if (Bold)
                 TextRunProperties.SetTypeface(new Typeface(TextRunProperties.Typeface.FontFamily, FontStyle.Normal, FontWeight.Bold, FontStretch.Normal));
             return base.CreateTextRun(startVisualColumn, context);
+        }
+
+        protected override void OnQueryCursor(PointerEventArgs e)
+        {
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                if (e.Source is InputElement element)
+                    element.Cursor = new Cursor(StandardCursorType.Hand);
+
+                e.Handled = true;
+            }
         }
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)

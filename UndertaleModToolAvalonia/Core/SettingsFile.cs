@@ -96,34 +96,6 @@ public partial class SettingsFile
 
     public string Version { get; set; } = App.VersionString;
 
-    public enum IndentStyleValue
-    {
-        FourSpaces = 0,
-        TwoSpaces = 1,
-        Tabs = 2,
-        Custom = 3,
-    }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public IndentStyleValue IndentStyle
-    {
-        get => DecompileSettings.IndentString switch
-        {
-            "    " => IndentStyleValue.FourSpaces,
-            "\t" => IndentStyleValue.Tabs,
-            "  " => IndentStyleValue.TwoSpaces,
-            _ => IndentStyleValue.Custom,
-        };
-        set => DecompileSettings.IndentString = value switch
-        {
-            IndentStyleValue.FourSpaces => "    ",
-            IndentStyleValue.TwoSpaces => "  ",
-            IndentStyleValue.Tabs => "\t",
-            IndentStyleValue.Custom => DecompileSettings.IndentString,
-            _ => throw new NotImplementedException(),
-        };
-    }
-    
     public enum ThemeValue
     {
         SystemDefault = 0,
@@ -162,6 +134,8 @@ public partial class SettingsFile
     public bool EnableProjectBackup { get; set; } = true;
 
     public bool AlwaysSaveDataInProjectDestination { get; set; } = true;
+
+    public bool EnableLocalizationStringPreview { get; set; } = true;
 
     public string InstanceIdPrefix { get; set; } = "inst_";
 
